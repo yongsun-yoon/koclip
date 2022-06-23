@@ -1,0 +1,22 @@
+cwd: ${hydra:runtime.cwd}
+
+ckpt_path: ${cwd}/ckpt
+batch_size: 32
+num_training_steps: 3000
+
+optim:
+  lr: 1e-4
+  weight_decay: 1e-2
+
+model:
+  clip: openai/clip-vit-base-patch32
+  kobert: klue/roberta-base
+
+train_data_files:
+  - data/mscoco_train.csv
+  - data/spoken_01.csv
+
+lite:
+  gpus: -1
+  strategy: ddp
+  precision: 32

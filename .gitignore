@@ -1,0 +1,5 @@
+outputs
+.ipynb_checkpoints
+data
+ckpt
+__pycache__

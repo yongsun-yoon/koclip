@@ -1,0 +1,10 @@
+cwd: ${hydra:runtime.cwd}
+device: cuda:0
+batch_size: 32
+
+model:
+  clip: openai/clip-vit-base-patch32
+  kobert: ${cwd}/ckpt
+
+images_path: data/stl10/test_X.bin
+labels_path: data/stl10/test_y.bin
