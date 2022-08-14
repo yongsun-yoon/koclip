@@ -114,20 +114,17 @@ class Lite(LightningLite):
             ko_embeds = kobert(**ko_inputs).pooler_output[:, :clip.projection_dim]
             koen_embeds = kobert(**koen_inputs).pooler_output[:, :clip.projection_dim]            
 
-            # en_embeds = self.all_gather_and_view(en_embeds, sync_grads=True)
-            # ko_embeds = self.all_gather_and_view(ko_embeds, sync_grads=True)
-            # koen_embeds = self.all_gather_and_view(koen_embeds, sync_grads=True)
-
             mse_loss = F.mse_loss(ko_embeds, en_embeds) + F.mse_loss(koen_embeds, en_embeds)
-            # mini_loss = minilm_loss_fn(ko_embeds.unsqueeze(0), en_embeds.unsqueeze(0)) + minilm_loss_fn(koen_embeds.unsqueeze(0), en_embeds.unsqueeze(0))
-            loss = mse_loss
+            cossim_labels = torch.ones(len(batch_idxs)).to(self.device)
+            cossim_loss = F.cosine_embedding_loss(ko_embeds, en_embeds, cossim_labels) + F.cosine_embedding_loss(koen_embeds, en_embeds, cossim_labels)
+            loss = cossim_loss
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             if self.is_global_zero:
-                pbar.set_postfix({'loss': loss.item(), 'mse': mse_loss.item(), 'mini': mini_loss.item()})
+                pbar.set_postfix({'loss': loss.item(), 'mse': mse_loss.item(), 'cossim': cossim_loss.item()})
                 if st % 1000 == 0:
                     kobert.save_pretrained(cfg.ckpt_path)
                     kobert_tokenizer.save_pretrained(cfg.ckpt_path)

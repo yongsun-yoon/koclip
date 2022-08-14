@@ -10,11 +10,10 @@ optim:
 
 model:
   clip: openai/clip-vit-base-patch32
-  kobert: klue/roberta-base
+  kobert: respect5716/koenbert-base
 
 train_data_files:
   - data/mscoco_train.csv
-  - data/spoken_01.csv
 
 lite:
   gpus: -1
